@@ -44,14 +44,16 @@ exports.post_get = async function (req, res) {
 /* POST create post */
 exports.post_post = async function (req, res, next) {
   let { author, title, body, published } = req.body;
+  let publish_date;
   // set publish date if post is published
   if (published) {
-    const publish_date = Date.now();
-    return;
+    publish_date = Date.now();
   }
   try {
+    // check that author exists
     await User.findById(author);
     const post = new Post({ author, title, body, published, publish_date });
+    console.log("posting");
     res.json(await post.save());
   } catch (err) {
     res.json({ error: err });
@@ -60,26 +62,29 @@ exports.post_post = async function (req, res, next) {
 
 /* PUT update post */
 exports.post_put = async function (req, res, next) {
-  let { author, title, body, published } = req.body;
+  let { title, body, published } = req.body;
   try {
     // set publish date if post becomes newly published
     let { published: prevPublished, publish_date } = await Post.findById(
       req.params.postId
     );
+    console.log(prevPublished);
     if (!prevPublished && published) {
       publish_date = Date.now();
     }
-    const post = new Post({
-      author,
+    const updates = {
       title,
       body,
       published,
       publish_date,
-      _id: req.params.postId,
-    });
-    const updatedPost = await Post.findByIdAndUpdate(req.params.postId, post, {
-      new: true,
-    });
+    };
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.params.postId,
+      { $set: updates },
+      {
+        new: true,
+      }
+    );
     res.json(updatedPost);
   } catch (err) {
     res.json({ error: err });
