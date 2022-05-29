@@ -18,6 +18,6 @@ exports.user_post = async function (req, res, next) {
     // Save user
     res.json(await user.save());
   } catch (err) {
-    next(err);
+    res.json(err);
   }
 };
