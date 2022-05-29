@@ -1,35 +1,40 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/user");
+const user_controller = require("../controllers/userController");
+const post_controller = require("../controllers/postController");
+const comment_controller = require("../controllers/commentController");
+
+// POSTS
 
 /* GET all posts */
-router.get("/api/posts", function (req, res, next) {
-  res.send("GET all posts");
-});
+router.get("/api/posts", post_controller.posts_get);
+
+/* GET all published posts */
+router.get("/api/posts/published", post_controller.published_posts_get);
 
 /* GET specific post */
-router.get("/api/posts/:postId", function (req, res, next) {
-  res.send("GET specific post: " + req.params.postId);
-});
+router.get("/api/posts/:postId", post_controller.post_get);
 
 /* POST create post */
-router.post("/api/posts", function (req, res, next) {
-  res.send("POST create post");
-});
+router.post("/api/posts", post_controller.post_post);
 
 /* PUT update post */
-router.put("/api/posts/:postId", function (req, res, next) {
-  res.send("PUT update post: " + req.params.postId);
-});
+router.put("/api/posts/:postId", post_controller.post_put);
+
+/* PUT delete post */
+router.delete("/api/posts/:postId", post_controller.post_delete);
+
+// COMMENTS
 
 /* GET all comments on post */
-router.get("/api/posts/:postId/comments", function (req, res, next) {
-  res.send("GET all comments on post: " + req.params.postId);
-});
+router.get("/api/posts/:postId/comments", comment_controller.post_comments_get);
 
 /* POST create comment */
-router.post("/api/posts/:postId/comments", function (req, res, next) {
-  res.send("POST create comment on post: " + req.params.postId);
-});
+router.post("/api/posts/:postId/comments", comment_controller.comment_post);
+
+// USERS
+
+/* POST create user */
+router.post("/api/users", user_controller.user_post);
 
 module.exports = router;
