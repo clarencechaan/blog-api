@@ -1,6 +1,7 @@
 const Post = require("../models/post");
 const User = require("../models/user");
 const { body, validationResult } = require("express-validator");
+const passport = require("passport");
 
 /* GET all posts */
 exports.posts_get = async function (req, res, next) {
@@ -43,6 +44,7 @@ exports.post_get = async function (req, res) {
 
 /* POST create post */
 exports.post_post = [
+  passport.authenticate("jwt", { session: false }),
   body("author", "Author must be between 1 and 72 characters.")
     .trim()
     .isLength({ min: 1, max: 72 })
@@ -74,7 +76,6 @@ exports.post_post = [
       // check that author exists
       await User.findById(author);
       const post = new Post({ author, title, body, published, publish_date });
-      console.log("posting");
       res.json(await post.save());
     } catch (err) {
       res.json({ error: err });
@@ -84,6 +85,7 @@ exports.post_post = [
 
 /* PUT update post */
 exports.post_put = [
+  passport.authenticate("jwt", { session: false }),
   body("title", "Title must be between 1 and 72 characters.")
     .trim()
     .isLength({ min: 1, max: 72 })
@@ -131,11 +133,14 @@ exports.post_put = [
 ];
 
 /* DELETE delete post */
-exports.post_delete = async function (req, res, next) {
-  try {
-    const deleted = await Post.findByIdAndDelete(req.params.postId);
-    res.json(deleted);
-  } catch (err) {
-    res.json({ error: err });
-  }
-};
+exports.post_delete = [
+  passport.authenticate("jwt", { session: false }),
+  async function (req, res, next) {
+    try {
+      const deleted = await Post.findByIdAndDelete(req.params.postId);
+      res.json(deleted);
+    } catch (err) {
+      res.json({ error: err });
+    }
+  },
+];
