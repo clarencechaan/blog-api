@@ -1,6 +1,6 @@
 const Post = require("../models/post");
 const User = require("../models/user");
-const mongoose = require("mongoose");
+const { body, validationResult } = require("express-validator");
 
 /* GET all posts */
 exports.posts_get = async function (req, res, next) {
@@ -42,54 +42,93 @@ exports.post_get = async function (req, res) {
 };
 
 /* POST create post */
-exports.post_post = async function (req, res, next) {
-  let { author, title, body, published } = req.body;
-  let publish_date;
-  // set publish date if post is published
-  if (published) {
-    publish_date = Date.now();
-  }
-  try {
-    // check that author exists
-    await User.findById(author);
-    const post = new Post({ author, title, body, published, publish_date });
-    console.log("posting");
-    res.json(await post.save());
-  } catch (err) {
-    res.json({ error: err });
-  }
-};
+exports.post_post = [
+  body("author", "Author must be between 1 and 72 characters.")
+    .trim()
+    .isLength({ min: 1, max: 72 })
+    .escape(),
+  body("title", "Title must be between 1 and 72 characters.")
+    .trim()
+    .isLength({ min: 1, max: 72 })
+    .escape(),
+  body("body", "Body must be between 1 and 1500 characters.")
+    .trim()
+    .isLength({ min: 1, max: 1500 })
+    .escape(),
+  body("published", "Published must be a boolean value.").isBoolean(),
+  async function (req, res, next) {
+    const errors = validationResult(req);
+    let { author, title, body, published } = req.body;
+    let publish_date;
 
-/* PUT update post */
-exports.post_put = async function (req, res, next) {
-  let { title, body, published } = req.body;
-  try {
-    // set publish date if post becomes newly published
-    let { published: prevPublished, publish_date } = await Post.findById(
-      req.params.postId
-    );
-    console.log(prevPublished);
-    if (!prevPublished && published) {
+    // set publish date if post is published
+    if (published) {
       publish_date = Date.now();
     }
-    const updates = {
-      title,
-      body,
-      published,
-      publish_date,
-    };
-    const updatedPost = await Post.findByIdAndUpdate(
-      req.params.postId,
-      { $set: updates },
-      {
-        new: true,
+    try {
+      // throw error if errors exist
+      if (!errors.isEmpty()) {
+        throw errors.array();
       }
-    );
-    res.json(updatedPost);
-  } catch (err) {
-    res.json({ error: err });
-  }
-};
+
+      // check that author exists
+      await User.findById(author);
+      const post = new Post({ author, title, body, published, publish_date });
+      console.log("posting");
+      res.json(await post.save());
+    } catch (err) {
+      res.json({ error: err });
+    }
+  },
+];
+
+/* PUT update post */
+exports.post_put = [
+  body("title", "Title must be between 1 and 72 characters.")
+    .trim()
+    .isLength({ min: 1, max: 72 })
+    .escape(),
+  body("body", "Body must be between 1 and 1500 characters.")
+    .trim()
+    .isLength({ min: 1, max: 1500 })
+    .escape(),
+  body("published", "Published must be a boolean value.").isBoolean(),
+  async function (req, res, next) {
+    const errors = validationResult(req);
+    let { title, body, published } = req.body;
+    try {
+      // throw error if errors exist
+      if (!errors.isEmpty()) {
+        throw errors.array();
+      }
+
+      // set publish date if post becomes newly published
+      let { published: prevPublished, publish_date } = await Post.findById(
+        req.params.postId
+      );
+      if (!prevPublished && published) {
+        publish_date = Date.now();
+      }
+
+      const updates = {
+        title,
+        body,
+        published,
+        publish_date,
+      };
+      const updatedPost = await Post.findByIdAndUpdate(
+        req.params.postId,
+        { $set: updates },
+        {
+          new: true,
+        }
+      );
+      res.json(updatedPost);
+    } catch (err) {
+      res.json({ error: err });
+    }
+  },
+];
 
 /* DELETE delete post */
 exports.post_delete = async function (req, res, next) {
