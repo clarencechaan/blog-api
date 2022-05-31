@@ -8,7 +8,7 @@ exports.post_comments_get = async function (req, res, next) {
     const comments = await Comment.find({ post: req.params.postId });
     res.json(comments);
   } catch (err) {
-    res.json({ error: err });
+    res.json({ error: err.message || err });
   }
 };
 
@@ -33,18 +33,21 @@ exports.comment_post = [
       post: req.params.postId,
     });
     try {
+      // check that post exists
+      const post = await Post.findById(req.params.postId);
+      if (!post) {
+        throw new Error("Post does not exist.");
+      }
+
       // throw error if errors exist
       if (!errors.isEmpty()) {
         throw errors.array();
       }
 
-      // check that post exists
-      await Post.findById(req.params.postId);
-
       // save comment
       res.json(await comment.save());
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message || err });
     }
   },
 ];

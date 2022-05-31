@@ -12,7 +12,7 @@ exports.posts_get = async function (req, res, next) {
     );
     res.json(posts);
   } catch (err) {
-    res.json({ error: err });
+    res.json({ error: err.message || err });
   }
 };
 
@@ -25,7 +25,7 @@ exports.published_posts_get = async function (req, res) {
     );
     res.json(publishedPosts);
   } catch (err) {
-    res.json({ error: err });
+    res.json({ error: err.message || err });
   }
 };
 
@@ -38,13 +38,15 @@ exports.post_get = async function (req, res) {
     );
     res.json(post);
   } catch (err) {
-    res.json({ error: err });
+    res.json({ error: err.message || err });
   }
 };
 
 /* POST create post */
 exports.post_post = [
+  // authenticate user's token
   passport.authenticate("jwt", { session: false }),
+  // validate and sanitize
   body("author", "Author must be between 1 and 72 characters.")
     .trim()
     .isLength({ min: 1, max: 72 })
@@ -60,7 +62,8 @@ exports.post_post = [
   body("published", "Published must be a boolean value.").isBoolean(),
   async function (req, res, next) {
     const errors = validationResult(req);
-    let { author, title, body, published } = req.body;
+    let { title, body, published } = req.body;
+    const author = req.user._id;
     let publish_date;
 
     // set publish date if post is published
@@ -73,19 +76,19 @@ exports.post_post = [
         throw errors.array();
       }
 
-      // check that author exists
-      await User.findById(author);
       const post = new Post({ author, title, body, published, publish_date });
       res.json(await post.save());
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message || err });
     }
   },
 ];
 
 /* PUT update post */
 exports.post_put = [
+  // authenticate user's token
   passport.authenticate("jwt", { session: false }),
+  // validate and sanitize
   body("title", "Title must be between 1 and 72 characters.")
     .trim()
     .isLength({ min: 1, max: 72 })
@@ -99,17 +102,26 @@ exports.post_put = [
     const errors = validationResult(req);
     let { title, body, published } = req.body;
     try {
-      // throw error if errors exist
-      if (!errors.isEmpty()) {
-        throw errors.array();
+      const post = await Post.findById(req.params.postId);
+      // throw error if post does not exist
+      if (!post) {
+        throw new Error("Post does not exist.");
+      }
+
+      const { author, published: prevPublished, publish_date } = post;
+      // throw error if user does not match post's author
+      if (req.user._id.toString() !== author.toString()) {
+        throw "You don't have permission to edit this post.";
       }
 
       // set publish date if post becomes newly published
-      let { published: prevPublished, publish_date } = await Post.findById(
-        req.params.postId
-      );
       if (!prevPublished && published) {
         publish_date = Date.now();
+      }
+
+      // throw error if errors exist
+      if (!errors.isEmpty()) {
+        errors.throw();
       }
 
       const updates = {
@@ -127,20 +139,31 @@ exports.post_put = [
       );
       res.json(updatedPost);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message || err });
     }
   },
 ];
 
 /* DELETE delete post */
 exports.post_delete = [
+  // authenticate user's token
   passport.authenticate("jwt", { session: false }),
   async function (req, res, next) {
     try {
+      const post = await Post.findById(req.params.postId);
+      // throw error if post does not exist
+      if (!post) {
+        throw new Error("Post does not exist.");
+      }
+
+      // throw error if user does not match post's author
+      if (req.user._id.toString() !== post.author.toString()) {
+        throw new Error("You don't have permission to delete this post.");
+      }
       const deleted = await Post.findByIdAndDelete(req.params.postId);
       res.json(deleted);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message || err });
     }
   },
 ];
