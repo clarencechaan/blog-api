@@ -8,6 +8,7 @@ const PostSchema = new Schema({
   body: { type: String, required: true },
   published: { type: Boolean, required: true },
   publish_date: { type: Date },
+  img_url: { type: String, required: true },
 });
 
 //Export model
