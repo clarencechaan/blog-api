@@ -17,12 +17,26 @@ exports.posts_get = async function (req, res, next) {
 };
 
 /* GET all published posts */
+// ordered by date descending
 exports.published_posts_get = async function (req, res) {
   try {
-    const publishedPosts = await Post.find({ published: true }).populate(
-      "author",
-      "first_name last_name username"
-    );
+    const publishedPosts = await Post.find({ published: true })
+      .populate("author", "first_name last_name username")
+      .sort({ publish_date: -1 });
+    res.json(publishedPosts);
+  } catch (err) {
+    res.json({ error: err.message || err });
+  }
+};
+
+/* GET 4 latest published posts */
+// ordered by date descending
+exports.published_posts_latest_get = async function (req, res) {
+  try {
+    const publishedPosts = await Post.find({ published: true })
+      .sort({ publish_date: -1 })
+      .limit(4)
+      .populate("author", "first_name last_name username");
     res.json(publishedPosts);
   } catch (err) {
     res.json({ error: err.message || err });

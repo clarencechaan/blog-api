@@ -12,6 +12,12 @@ router.get("/api/posts", post_controller.posts_get);
 /* GET all published posts */
 router.get("/api/posts/published", post_controller.published_posts_get);
 
+/* GET 4 latest published posts */
+router.get(
+  "/api/posts/published/latest",
+  post_controller.published_posts_latest_get
+);
+
 /* GET specific post */
 router.get("/api/posts/:postId", post_controller.post_get);
 

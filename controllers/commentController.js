@@ -2,10 +2,13 @@ const Comment = require("../models/comment");
 const Post = require("../models/comment");
 const { body, validationResult } = require("express-validator");
 
-/* GET all comments on post */
+/* GET all comments on a post */
+/* order by timestamp desc*/
 exports.post_comments_get = async function (req, res, next) {
   try {
-    const comments = await Comment.find({ post: req.params.postId });
+    const comments = await Comment.find({ post: req.params.postId }).sort({
+      timestamp: -1,
+    });
     res.json(comments);
   } catch (err) {
     res.json({ error: err.message || err });
