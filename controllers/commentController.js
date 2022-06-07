@@ -17,13 +17,13 @@ exports.post_comments_get = async function (req, res, next) {
 
 /* POST create comment */
 exports.comment_post = [
-  body("name", "Name must be between 1 and 24 characters.")
+  body("name", "Name must be between 1 and 42 characters.")
     .trim()
-    .isLength({ min: 1, max: 24 })
+    .isLength({ min: 1, max: 42 })
     .escape(),
-  body("text", "Text must be between 1 and 1500 characters.")
+  body("text", "Text must be between 1 and 1000 characters.")
     .trim()
-    .isLength({ min: 1, max: 1500 })
+    .isLength({ min: 1, max: 1000 })
     .escape(),
   async function (req, res, next) {
     const errors = validationResult(req);
