@@ -1,5 +1,5 @@
 const Comment = require("../models/comment");
-const Post = require("../models/comment");
+const Post = require("../models/post");
 const { body, validationResult } = require("express-validator");
 
 /* GET all comments on a post */
