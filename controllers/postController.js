@@ -1,5 +1,4 @@
 const Post = require("../models/post");
-const User = require("../models/user");
 const { body, validationResult } = require("express-validator");
 const passport = require("passport");
 

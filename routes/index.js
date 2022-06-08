@@ -43,4 +43,7 @@ router.post("/api/posts/:postId/comments", comment_controller.comment_post);
 /* POST create user */
 router.post("/api/users", user_controller.user_post);
 
+/* GET user from JWT sent in request */
+router.get("/api/me", user_controller.user_get);
+
 module.exports = router;

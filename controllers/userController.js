@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const passport = require("passport");
 const User = require("../models/user");
 const { body, validationResult } = require("express-validator");
 
@@ -51,6 +52,19 @@ exports.user_post = [
         // Save user
         res.json(await user.save());
       });
+    } catch (err) {
+      res.json(err);
+    }
+  },
+];
+
+/* GET user from JWT sent in request */
+exports.user_get = [
+  passport.authenticate("jwt", { session: false }),
+  async function (req, res, next) {
+    try {
+      const user = await User.findById(req.user._id, "-password");
+      res.json(user);
     } catch (err) {
       res.json(err);
     }
