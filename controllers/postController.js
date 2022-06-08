@@ -61,10 +61,6 @@ exports.post_post = [
   // authenticate user's token
   passport.authenticate("jwt", { session: false }),
   // validate and sanitize
-  body("author", "Author must be between 1 and 72 characters.")
-    .trim()
-    .isLength({ min: 1, max: 72 })
-    .escape(),
   body("title", "Title must be between 1 and 72 characters.")
     .trim()
     .isLength({ min: 1, max: 72 })

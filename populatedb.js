@@ -36,30 +36,19 @@ function userCreate(first_name, last_name, username, password, cb) {
     username,
   });
 
-  // bcrypt.hash(password, 10, (err, hashedPassword) => {
-  //   if (err) {
-  //     return next(err);
-  //   }
-  //   user.password = hashedPassword;
-  //   user.save(function (err) {
-  //     if (err) {
-  //       return cb(err, null);
-  //     }
-  //     console.log("New User: " + user);
-  //     users.push(user);
-  //     cb(null, user);
-  //   });
-  // });
-
-  user.password = password;
-  user.save(function (err) {
+  bcrypt.hash(password, 10, (err, hashedPassword) => {
     if (err) {
-      cb(err, null);
-      return;
+      return next(err);
     }
-    console.log("New User: " + user);
-    users.push(user);
-    cb(null, user);
+    user.password = hashedPassword;
+    user.save(function (err) {
+      if (err) {
+        return cb(err, null);
+      }
+      console.log("New User: " + user);
+      users.push(user);
+      cb(null, user);
+    });
   });
 }
 

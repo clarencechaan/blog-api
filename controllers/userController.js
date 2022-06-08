@@ -1,3 +1,4 @@
+const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const { body, validationResult } = require("express-validator");
 
@@ -22,7 +23,6 @@ exports.user_post = [
   async function (req, res, next) {
     const errors = validationResult(req);
     const { first_name, last_name, username, password } = req.body;
-    const user = new User({ first_name, last_name, username, password });
 
     try {
       // throw error if errors exist
@@ -39,8 +39,18 @@ exports.user_post = [
         return;
       }
 
-      // Save user
-      res.json(await user.save());
+      bcrypt.hash(password, 10, async (err, hashedPassword) => {
+        if (err) {
+        }
+        const user = new User({
+          first_name,
+          last_name,
+          username,
+          password: hashedPassword,
+        });
+        // Save user
+        res.json(await user.save());
+      });
     } catch (err) {
       res.json(err);
     }
