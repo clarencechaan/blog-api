@@ -64,9 +64,9 @@ exports.post_post = [
     .trim()
     .isLength({ min: 1, max: 72 })
     .escape(),
-  body("body", "Body must be between 1 and 1500 characters.")
+  body("body", "Body must be between 1 and 10000 characters.")
     .trim()
-    .isLength({ min: 1, max: 1500 })
+    .isLength({ min: 1, max: 10000 })
     .escape(),
   body("published", "Published must be a boolean value.").isBoolean(),
   async function (req, res, next) {
@@ -102,14 +102,15 @@ exports.post_put = [
     .trim()
     .isLength({ min: 1, max: 72 })
     .escape(),
-  body("body", "Body must be between 1 and 1500 characters.")
+  body("body", "Body must be between 1 and 10000 characters.")
     .trim()
-    .isLength({ min: 1, max: 1500 })
+    .isLength({ min: 1, max: 10000 })
     .escape(),
   body("published", "Published must be a boolean value.").isBoolean(),
   async function (req, res, next) {
     const errors = validationResult(req);
     let { title, body, published } = req.body;
+    console.log({ title, published });
     try {
       const post = await Post.findById(req.params.postId);
       // throw error if post does not exist
@@ -117,14 +118,14 @@ exports.post_put = [
         throw new Error("Post does not exist.");
       }
 
-      const { author, published: prevPublished, publish_date } = post;
+      let { author, publish_date } = post;
       // throw error if user does not match post's author
       if (req.user._id.toString() !== author.toString()) {
         throw "You don't have permission to edit this post.";
       }
 
       // set publish date if post becomes newly published
-      if (!prevPublished && published) {
+      if (!publish_date && published) {
         publish_date = Date.now();
       }
 
