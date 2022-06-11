@@ -5,10 +5,9 @@ const passport = require("passport");
 /* GET all posts */
 exports.posts_get = async function (req, res, next) {
   try {
-    const posts = await Post.find({}).populate(
-      "author",
-      "first_name last_name username"
-    );
+    const posts = await Post.find({})
+      .sort({ publish_date: -1 })
+      .populate("author", "first_name last_name username");
     res.json(posts);
   } catch (err) {
     res.json({ error: err.message || err });
@@ -20,8 +19,8 @@ exports.posts_get = async function (req, res, next) {
 exports.published_posts_get = async function (req, res) {
   try {
     const publishedPosts = await Post.find({ published: true })
-      .populate("author", "first_name last_name username")
-      .sort({ publish_date: -1 });
+      .sort({ publish_date: -1 })
+      .populate("author", "first_name last_name username");
     res.json(publishedPosts);
   } catch (err) {
     res.json({ error: err.message || err });
@@ -69,23 +68,27 @@ exports.post_post = [
     .isLength({ min: 1, max: 10000 })
     .escape(),
   body("published", "Published must be a boolean value.").isBoolean(),
+  body("img_url", "Image URL must be a URL.").isURL(),
   async function (req, res, next) {
     const errors = validationResult(req);
-    let { title, body, published } = req.body;
+    let { title, body, published, img_url } = req.body;
     const author = req.user._id;
-    let publish_date;
+    const publish_date = Date.now();
 
-    // set publish date if post is published
-    if (published) {
-      publish_date = Date.now();
-    }
     try {
       // throw error if errors exist
       if (!errors.isEmpty()) {
         throw errors.array();
       }
 
-      const post = new Post({ author, title, body, published, publish_date });
+      const post = new Post({
+        author,
+        title,
+        body,
+        published,
+        publish_date,
+        img_url,
+      });
       res.json(await post.save());
     } catch (err) {
       res.json({ error: err.message || err });
@@ -118,15 +121,10 @@ exports.post_put = [
         throw new Error("Post does not exist.");
       }
 
-      let { author, publish_date } = post;
+      const { author } = post;
       // throw error if user does not match post's author
       if (req.user._id.toString() !== author.toString()) {
         throw "You don't have permission to edit this post.";
-      }
-
-      // set publish date if post becomes newly published
-      if (!publish_date && published) {
-        publish_date = Date.now();
       }
 
       // throw error if errors exist
@@ -138,7 +136,6 @@ exports.post_put = [
         title,
         body,
         published,
-        publish_date,
       };
       const updatedPost = await Post.findByIdAndUpdate(
         req.params.postId,
