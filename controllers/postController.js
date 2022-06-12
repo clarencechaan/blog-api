@@ -113,7 +113,6 @@ exports.post_put = [
   async function (req, res, next) {
     const errors = validationResult(req);
     let { title, body, published } = req.body;
-    console.log({ title, published });
     try {
       const post = await Post.findById(req.params.postId);
       // throw error if post does not exist

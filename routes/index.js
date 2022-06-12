@@ -27,7 +27,7 @@ router.post("/api/posts", post_controller.post_post);
 /* PUT update post */
 router.put("/api/posts/:postId", post_controller.post_put);
 
-/* PUT delete post */
+/* DELETE delete post */
 router.delete("/api/posts/:postId", post_controller.post_delete);
 
 // COMMENTS
