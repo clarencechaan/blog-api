@@ -24,3 +24,5 @@ Post model: { author, title, body, published, published_date, img_url }
 Comment model: { name, text, post, timestamp }
 
 User model: { first_name, last_name, username, password }
+  
+Precreated account to try it out: **username** theapartment, **password** pass
