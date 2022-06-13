@@ -1,5 +1,7 @@
 # blog-api
-RESTful API that provides access to the MongoDB database used in the blogging website at https://webrite.onrender.com/
+Express/Node RESTful API that provides access to the MongoDB database used in the blogging website at https://webrite.onrender.com/
+
+React frontend repo can be found at https://github.com/clarencechaan/blog-frontend
 
 Queries to the API can be made by sending the desired HTTP request to https://webrite-api.onrender.com/<query>
 
