@@ -1,6 +1,7 @@
 # blog-api
 RESTful API that provides access to the MongoDB database used in the blogging website at https://webrite.onrender.com/
-Queries to the API can be made by sending the desired HTTP request to https://webrite-api.onrender.com/[your query here]
+
+Queries to the API can be made by sending the desired HTTP request to https://webrite-api.onrender.com/<query>
 
 | Method |           Endpoint          |               Description               | Required fields                           | JSON Web Token (JWT) <br>required  |
 |:------:|:---------------------------:|:---------------------------------------:|-------------------------------------------|:----------------------------------:|
@@ -17,5 +18,7 @@ Queries to the API can be made by sending the desired HTTP request to https://we
 | POST   | /auth/login                 | Retrieve JWT associated with user       |             username, password            |                  ❌                 |
 
 Post model: { author, title, body, published, published_date, img_url }
+
 Comment model: { name, text, post, timestamp }
+
 User model: { first_name, last_name, username, password }
