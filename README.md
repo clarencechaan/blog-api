@@ -1,6 +1,6 @@
 # blog-api
-Express/Node RESTful API that provides access to the MongoDB database used in the MERN stack blogging website at https://webrite.onrender.com/\
-React frontend repo can be found at https://github.com/clarencechaan/blog-frontend\
+Express/Node RESTful API that provides access to the MongoDB database used in the MERN stack blogging website at https://webrite.onrender.com/ \
+React frontend repo can be found at https://github.com/clarencechaan/blog-frontend \
 Queries to the API can be made by sending the desired HTTP request to https://webrite-api.onrender.com/<query>
 
 | Method |           Endpoint          |               Description               | Required fields                           | JSON Web Token (JWT) <br>required  |
@@ -17,8 +17,8 @@ Queries to the API can be made by sending the desired HTTP request to https://we
 | GET    | /api/me                     | Retrieve user associated with JWT       |                     -                     |                  ✅                 |
 | POST   | /auth/login                 | Retrieve JWT associated with user       |             username, password            |                  ❌                 |
 
-Post model: { author, title, body, published, published_date, img_url }\
-Comment model: { name, text, post, timestamp }\
-User model: { first_name, last_name, username, password }\
+Post model: { author, title, body, published, published_date, img_url } \
+Comment model: { name, text, post, timestamp } \
+User model: { first_name, last_name, username, password }
   
 Precreated account to try it out: **username** theapartment, **password** pass
