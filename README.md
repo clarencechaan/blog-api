@@ -4,7 +4,7 @@ React frontend repo can be found at https://github.com/clarencechaan/blog-fronte
 Queries to the API can be made by sending the desired HTTP request to [https://webrite-api.herokuapp.com/](https://webrite-api.herokuapp.com/)\<query>
 
 | Method |           Endpoint          |               Description               | Required fields                           | JSON Web Token (JWT) <br>required  |
-|:------:|:---------------------------:|:---------------------------------------:|-------------------------------------------|:----------------------------------:|
+|:------:|:---------------------------:|:---------------------------------------:|:-----------------------------------------:|:----------------------------------:|
 | GET    | /api/posts                  | Retrieve all posts                      |                     -                     |                  ❌                 |
 | GET    | /api/posts/published        | Retrieve all published posts            |                     -                     |                  ❌                 |
 | GET    | /api/posts/published/latest | Retrieve 4 latest published posts       |                     -                     |                  ❌                 |
