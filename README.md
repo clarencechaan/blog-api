@@ -1,7 +1,7 @@
 # blog-api
 Express/Node RESTful API that provides access to the MongoDB database used in the MERN stack blogging website at https://webrite.onrender.com/ \
 React frontend repo can be found at https://github.com/clarencechaan/blog-frontend \
-Queries to the API can be made by sending the desired HTTP request to [https://webrite-api.herokuapp.com/](https://webrite-api.herokuapp.com/)\<query>
+Queries to the API can be made by sending the desired HTTP request to `https://webrite-api.onrender.com/<query>`
 
 | Method |           Endpoint          |               Description               | Required fields                           | JSON Web Token (JWT) <br>required  |
 |:------:|:---------------------------:|:---------------------------------------:|:-----------------------------------------:|:----------------------------------:|
